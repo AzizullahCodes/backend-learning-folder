@@ -38,12 +38,6 @@ server.post('/myApi/addUser',(req,res)=>{
 server.delete('/myApi/deleteUser/:key',(req,res)=>{
     const {key} = req.params
     const myKey = Number(key)
-    // if(myKey == undefined || myKey == ''){
-    //     return res.status(400).send({
-    //         status:false,
-    //         message : 'myKey(index) is required for deleting user'
-    //     })
-    // }
     let cloneExistingUsers = [...users]
     cloneExistingUsers.splice(myKey,1)
     users = cloneExistingUsers
@@ -52,6 +46,31 @@ server.delete('/myApi/deleteUser/:key',(req,res)=>{
         status : true,
         message : 'user deleted successfully'
     })
+})
+//api for update user 
+server.put('/myApi/updateUser',(req,res)=>{
+    const {key} = req.body
+    const numericKey = Number(key)
+    const {val} = req.body 
+     let cloneExistingUsers = [...users]
+     cloneExistingUsers.splice(numericKey,1,val)
+     users = cloneExistingUsers 
+
+     return res.status(200).send({
+        status : true,
+        data : users,
+        message : 'user updated successfully'
+     })
+    
+})
+//api for deleting all users....
+server.delete('/myApi/deleteAll',(req,res)=>{
+   users = []
+   return res.status(200).send({
+    status : true,
+    data : users,
+    message : 'all users deleted successfully'
+   })
 })
 //port 
 const port = 5050;
