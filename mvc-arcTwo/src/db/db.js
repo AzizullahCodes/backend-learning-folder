@@ -3,12 +3,14 @@
 import mongoose from "mongoose";
 
 // let dbUrl = "mongodb+srv://AdminB18:Admin123@smit.qj6vxxm.mongodb.net/?appName=SMIT";
-let dbUrl = 'mongodb+srv://azizullahcodes_db_user:rShLhYlLKgaAuDm@backend-practice.2hyvo6d.mongodb.net/?appName=backend-practice'
+
+// let dbUrl = 'mongodb+srv://azizullahcodes_db_user:rShLhYlLKgaAuDm@backend-practice.2hyvo6d.mongodb.net/?appName=backend-practice'
+let dbUrl = 'mongodb+srv://smitBatch-18:smitbatch18@backend-development.y6uu8ks.mongodb.net/?appName=backend-development'
 const connectDB = async () => {
     try {
         const res = await mongoose.connect(
             dbUrl,
-            { dbName: "backend-learning-database" }
+            { dbName: "users" }
         );
         res && console.log('Mongo DB connected successfully!');
     }
