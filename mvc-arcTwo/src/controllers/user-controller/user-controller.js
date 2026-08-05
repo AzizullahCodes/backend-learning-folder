@@ -1,43 +1,43 @@
-// Data store
+// All user related controller functions are defined here...!
+
 import UserModal from "../../modals/user-modal/user-modal.js";
-let fruits = ['apple', 'banana', 'grapes'];
 
-// Controller 1
-const greetUser = async (req, res) => {
+const greetUser = (req, res) => {
     return res.status(200).send({
-        message: 'node module is running'
+        message: "User module in Node JS"
     });
 };
 
-// Controller 2
-const fruitApi = async (req, res) => {
-    return res.status(200).send({
-        status: true,
-        message: 'fruit api created successfully',
-        data: fruits
-    });
-};
+// Save / create ysaer controller...!
+const createUser = async (req, res) => {
+    try {
 
+        const isUserExist = await UserModal.findOne({ email: req.body.email });
+        if (isUserExist) {
+            return res.status(400).send({
+                status: false,
+                message: "Email already exist!"
+            });
+        }
 
-//save and createUser controller
-const createUser = async(req,res)=>{
-    try{
-const newUser = new UserModal(req.body)
-const saveUser = await newUser.save()
-if(saveUser){
-    return res.status(200).send({
-        status : true,
-        message : 'user saved successfully'
-    })
-}
+        const newUser = new UserModal(req.body);
+        const saveUser = await newUser.save();
+
+        if (saveUser) {
+            return res.status(200).send({
+                status: true,
+                message: "User saved successfully"
+            });
+        }
     }
-    catch(error){
-        console.log(`Error while saving user to mongoDB : ${error}`)
+
+    catch (error) {
+        console.log(`Err while saving user: ${error}`);
         return res.status(500).send({
-            status : false,
-            message : "internal server Error"
-        })
-    }
+            status: false,
+            message: "Internal server error!"
+        });
+    };
 }
 
-export { greetUser, fruitApi };
+export { greetUser, createUser };
