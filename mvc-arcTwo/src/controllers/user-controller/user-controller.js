@@ -8,38 +8,6 @@ const greetUser = (req, res) => {
     });
 };
 
-// Save / create ysaer controller...!
-// const createUser = async (req, res) => {
-    
-//     try {
-
-//         const isUserExist = await UserModal.findOne({ email: req.body.email });
-//         if (isUserExist) {
-//             return res.status(400).send({
-//                 status: false,
-//                 message: "Email already exist!"
-//             });
-//         }
-
-//         const newUser = new UserModal(req.body);
-//         const saveUser = await newUser.save();
-
-//         if (saveUser) {
-//             return res.status(200).send({
-//                 status: true,
-//                 message: "User saved successfully"
-//             });
-//         }
-//     }
-
-//     catch (error) {
-//         console.log(`Err while saving user: ${error}`);
-//         return res.status(500).send({
-//             status: false,
-//             message: "Internal server error!"
-//         });
-//     };
-// }
 
 const createUser = async(req,res)=>{
     const {userName,email,password,role} = req.body
@@ -75,4 +43,62 @@ const createUser = async(req,res)=>{
         })
     }
 }
-export { greetUser, createUser };
+//fetchAllUserFrom mogo db 
+const fetchUsers = async(req,res)=>{
+try{
+    const {role} = req.query
+    // console.log(role) 
+    const counts = await UserModal.countDocuments();
+    console.log('counts ',counts)
+    if(counts == 0){
+        return res.status(400).send({
+            status : false,
+            message : 'No user found in mongoDB',
+            data : []
+        })
+    }
+    const query = (role) ?({role}) : ({})
+// let fetchData = await UserModal.find(); 
+// let fetchData  = await UserModal.find(query)
+let fetchData  = await UserModal.find(query).select('-password')
+
+if(fetchData){
+    return res.status(200).send({
+        status : true,
+        message : 'all users fetched from mongoDB successfully',
+        data : fetchData
+    })
+        
+    
+}
+}
+catch(error){
+    console.log(`Error while fetching all users from mongoDB ${error}`);
+    return res.status(500).send({
+        status : false,
+        message : "an error occured while fetching users from mongoDB"
+    })
+}
+}
+//delete user controller/api 
+const deleteUser = async(req,res)=>{
+    const {uid} = req.params();
+    
+    try{
+        let del = await UserModal.findByIdAndDelete(uid)
+        if(del){
+            return res.status(200).send({
+                status : true,
+                message : 'user deleted successfully'
+            })
+        }
+        }
+    catch(error){
+        console.log(`Error while deleting user from monoDB ${error}`);
+        return res.status(500).send({
+            status : false,
+            message : 'Error occured while deleting user from mongoDB'
+        })
+    }
+}
+export { greetUser, createUser,fetchUsers,deleteUser};
