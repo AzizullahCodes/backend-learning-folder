@@ -8,6 +8,10 @@ const Home = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  //state for edit and update purpose 
+  const [editingId,setEditingId] = useState(null);
+  const [isEdit,setIsEdit] = useState(false)
+
 
   // Fetch users from MongoDB server
   const fetcUsers = async () => {
@@ -59,24 +63,30 @@ const Home = () => {
       console.log('Error while deleting user from mongoDB', error);
     }
   };
+  //startEditing function 
+  const startEditing = (item)=>{
+    setIsEdit(true)
+    setEditingId(item._id)
+setUserName(item.userName)
+  }
   //update data in database from browser 
-  const updateUser = async (item) => {
-    console.log(item)
-    const uid = item._id;
-    console.log('deleting uid....',uid)
-    let apiUrl = `http://localhost:5050/user/updateUser/${uid}`;
+  const updateUser = async () => {
+    // console.log(item)
+    // const uid = item._id;
+    // console.log('deleting uid....',uid)
+    let apiUrl = `http://localhost:5050/user/updateUser/${editingId}`;
 
     try {
-      let del = await axios({
-        url : apiUrl,
-        method : 'PUT',
-        updateName : 
-      })
-      if (del.status === 200) {
-        console.log('User deleted successfully');
-        // Update state locally or re-fetch from database
-        // setData((prevData) => prevData.filter((user) => user._id !== uid));
-        fetcUsers()
+      let update = await axios.put(
+        apiUrl,
+        {updateName : userName}
+      )
+      if (update.status === 200) {
+        console.log('User name updated  successfully');
+         setIsEdit(false)
+    setEditingId(null)
+setUserName('')
+fetcUsers()
       }
     } catch (error) {
       console.log('Error while deleting user from mongoDB', error);
@@ -118,7 +128,10 @@ const Home = () => {
         onChange={(e) => setRole(e.target.value)} 
       /><br/>
 
-      <button onClick={addUserFun}>Add User</button>
+      {/* <button onClick={addUserFun}>Add User</button> */}
+     {
+       (isEdit)?(<button onClick={updateUser}>update user</button>): (<button onClick={addUserFun}>Add User</button>)
+     }
 
       <div>
         <ul style={{ display: 'flex', gap: '14px', flexDirection: 'column' }}>
@@ -131,7 +144,7 @@ const Home = () => {
                 <button onClick={() => deleteUser(item)}>Delete User</button>
               </span>
               <span>
-                <button onClick={() => updateUser(item)}>update user</button>
+                <button onClick={() => startEditing(item)}>Edit user</button>
               </span>
             </li>
           ))}

@@ -52,7 +52,7 @@ try{
     const counts = await UserModal.countDocuments();
     console.log('counts ',counts)
     if(counts == 0){
-        return res.status(400).send({
+        return res.status(200).send({
             status : false,
             message : 'No user found in mongoDB',
             data : []
