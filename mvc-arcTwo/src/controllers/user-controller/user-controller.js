@@ -1,5 +1,6 @@
 // All user related controller functions are defined here...!
 
+import mongoose from "mongoose";
 import UserModal from "../../modals/user-modal/user-modal.js";
 
 const greetUser = (req, res) => {
@@ -81,24 +82,67 @@ catch(error){
 }
 }
 //delete user controller/api 
-const deleteUser = async(req,res)=>{
-    const {uid} = req.params();
-    
+
+const deleteUser = async (req, res) => {
+  const { uid } = req.params;
+//   checking uid is valid 
+  const checkUid = mongoose.isValidObjectId(uid)
+  if(!checkUid){
+    return res.status(400).send({
+        status : false,
+        message : 'uid is not valid'
+    })
+  }
+
+  try {
+    // const del = await UserModal.deleteOne({_id:uid})
+    const del = await UserModal.findByIdAndDelete(uid);
+
+    if (del) {
+      return res.status(200).send({
+        status: true,
+        message: 'User deleted successfully'
+      });
+    } else {
+      return res.status(404).send({
+        status: false,
+        message: 'User not found in MongoDB'
+      });
+    }
+  } catch (error) {
+    console.log(`Error while deleting user from MongoDB: ${error}`);
+    return res.status(500).send({
+      status: false,
+      message: 'Error occurred while deleting user from MongoDB'
+    });
+  }
+};
+//api for update data in mongoDB 
+const updateUser = async(req,res)=>{
+    // const {uid,updateName} = req.body 
+    const {updateName} = req.body;
+    const {uid} = req.params;
     try{
-        let del = await UserModal.findByIdAndDelete(uid)
-        if(del){
-            return res.status(200).send({
-                status : true,
-                message : 'user deleted successfully'
-            })
-        }
-        }
+   const updUser = await UserModal.findByIdAndUpdate(
+    uid,
+    {userName : updateName},
+    {new : true}
+   )
+   if(updateUser){
+    return res.status(200).send({
+        status : true,
+        message : 'user updated successfully',
+        data : updUser
+    })
+   }
+    }
     catch(error){
-        console.log(`Error while deleting user from monoDB ${error}`);
+        console.l
+        (`Error while updating user in mongoDB ${error}`);
         return res.status(500).send({
             status : false,
-            message : 'Error occured while deleting user from mongoDB'
+            message : 'Error while updating user in database'
         })
     }
 }
-export { greetUser, createUser,fetchUsers,deleteUser};
+export { greetUser, createUser,fetchUsers,deleteUser,updateUser};
