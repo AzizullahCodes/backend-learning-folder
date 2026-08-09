@@ -126,7 +126,7 @@ const updateUser = async(req,res)=>{
    const updUser = await UserModal.findByIdAndUpdate(
     uid,
     {userName : updateName},
-    {new : true}
+    {new : true}  //this is for update all data
    )
    if(updateUser){
     return res.status(200).send({

@@ -92,7 +92,12 @@ fetcUsers()
       console.log('Error while deleting user from mongoDB', error);
     }
   };
-
+//cancel Edit function 
+const cancelEdit = ()=>{
+  setIsEdit(false)
+    setEditingId(null)
+setUserName('')
+}
   useEffect(() => {
     fetcUsers();
   }, []);
@@ -130,7 +135,8 @@ fetcUsers()
 
       {/* <button onClick={addUserFun}>Add User</button> */}
      {
-       (isEdit)?(<button onClick={updateUser}>update user</button>): (<button onClick={addUserFun}>Add User</button>)
+       (isEdit)?(<><button onClick={updateUser}>update user</button> 
+       <button onClick={cancelEdit}>cancel Edit</button></>): (<button onClick={addUserFun}>Add User</button>)
      }
 
       <div>
