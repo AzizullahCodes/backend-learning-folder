@@ -2,6 +2,7 @@
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
+import { setCookie } from 'cookies-next'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -23,10 +24,22 @@ const Login = () => {
 
     try {
       let res = await axios.post(apiUrl, { email, password });
+      console.log('testing......',res)
+      let myRequiredToken = res?.data?.token;
+              console.log(myRequiredToken)
+                    setCookie('myToken',myRequiredToken,{maxAge: 60*60*3})
+
+      // console.log(res.data.token)
+      console.log(myRequiredToken)
       if (res.status === 200) {
         console.log('User logged in successfully');
+        window.location.reload()
+        
         setEmail('');
         setPassword('');
+
+              
+
         // Optionally redirect or store token here
         // localStorage.setItem('token', res.data.token);
       }

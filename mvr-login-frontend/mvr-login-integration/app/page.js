@@ -49,8 +49,7 @@ const Home = ()=>{
 
   return(
     <div>
-      <Signup/>
-      <Login/>
+      <h1>home page</h1>
     </div>
   )
 }
