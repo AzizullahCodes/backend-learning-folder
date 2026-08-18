@@ -1,56 +1,31 @@
-// 'use client'
-// import React from 'react'
-// import { useState } from 'react'
-// import axios from 'axios'
-// const Home = () => {
-//   const [email,setEmail] = useState('');
-//   const [password,setPassword] = useState('');
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { getCookie } from 'cookies-next'
 
-//    // Add user function
-//   const addUserFun = async () => {
-//     let apiUrl = 'http://localhost:5050/user/save';
-//     try {
-//       let res = await axios.post(apiUrl, { email, password });
-//       if (res.status === 200) {
-//         console.log('User added successfully');
-//         setEmail('');
-//         setPassword('')
-        
-//       }
-//     } catch (error) {
-//       console.log('Error while adding new user:', error);
-//     }
-//   };
+export default function HomePage() {
+  const router = useRouter()
 
+  useEffect(() => {
+    // Check every 1 second if token has expired
+    const interval = setInterval(() => {
+      const token = getCookie('myToken')
 
-//   return (
-//     <div>
-//       <h1>signup/login</h1>
-//       <input 
-//       type='email'
-//       placeholder='Enter your email'
-//       onChange={(e)=>setEmail(e.target.value)}
-//       value={email}/><br/>
-//        <input 
-//       type='password'
-//       placeholder='Enter your password'
-//       onChange={(e)=>setPassword(e.target.value)}
-//       value={password}/><br/>
-//       <button onClick={addUserFun}>add user</button>
-//     </div>
-//   )
-// }
+      if (!token) {
+        console.log('Token expired! Redirecting to /login...')
+        clearInterval(interval) // Stop interval
+        router.push('/login')    // Push to login page
+      }
+    }, 1000)
 
-// export default Home
-import React from "react";
-import Signup from "./signup/page";
-import Login from "./login/page";
-const Home = ()=>{
+    // Cleanup interval when component unmounts
+    return () => clearInterval(interval)
+  }, [router])
 
-  return(
+  return (
     <div>
-      <h1>home page</h1>
+      <h1>Home Page</h1>
+      <p>You will be redirected automatically to /login 1 minute after login.</p>
     </div>
   )
 }
-export default Home

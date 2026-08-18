@@ -1,16 +1,17 @@
-//login
 'use client'
 import React, { useState } from 'react'
 import axios from 'axios'
 import { setCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation' // Added router
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const router = useRouter(); // Initialize router
 
-  // Login user function
   const loginUserFun = async () => {
     if (!email || !password) {
       setError('Email and password are required');
@@ -24,24 +25,19 @@ const Login = () => {
 
     try {
       let res = await axios.post(apiUrl, { email, password });
-      console.log('testing......',res)
       let myRequiredToken = res?.data?.token;
-              console.log(myRequiredToken)
-                    setCookie('myToken',myRequiredToken,{maxAge: 60*60*3})
 
-      // console.log(res.data.token)
-      console.log(myRequiredToken)
-      if (res.status === 200) {
+      if (res.status === 200 && myRequiredToken) {
+        // Set cookie maxAge to 60 seconds (1 minute)
+        setCookie('myToken', myRequiredToken, { maxAge: 60, path: '/' });
+
         console.log('User logged in successfully');
-        window.location.reload()
         
         setEmail('');
         setPassword('');
 
-              
-
-        // Optionally redirect or store token here
-        // localStorage.setItem('token', res.data.token);
+        // Smooth redirect to home
+        router.push('/');
       }
     } catch (error) {
       console.log('Error while logging in:', error);
