@@ -2,6 +2,7 @@
 
 import mongoose from "mongoose";
 import UserModal from "../../modals/user-modal/user-modal.js";
+import bcrypt from 'bcryptjs';
 
 const greetUser = (req, res) => {
     return res.status(200).send({
@@ -27,6 +28,8 @@ const createUser = async(req,res)=>{
             message : 'This email already existed, use new email'
         })
      }
+     
+
      const newUser = await new UserModal({userName,email,password,role})
      const saveUser = await newUser.save()
      if(saveUser){
