@@ -3,6 +3,10 @@
 import mongoose from "mongoose";
 import UserModal from "../../modals/user-modal/user-modal.js";
 import bcrypt from 'bcryptjs';
+import nodeCache from 'node-cache'
+import { json } from "express";
+
+const cacheClient = new nodeCache();
 
 const greetUser = (req, res) => {
     return res.status(200).send({
@@ -84,6 +88,92 @@ catch(error){
     })
 }
 }
+
+//node js performance optimization part start 
+// fetch user by id controller...!
+// const fetchUserByID = async (req, res) => {
+//     try {
+//         const redisKey = req.params.uid;
+//         // console.log('User id:', redisKey);
+
+//         const cachedData = cacheClient.get(redisKey);
+
+//         if (cachedData) {
+//             console.log('User fetched from server memory!');
+//             return res.status(200).send({
+//                 status: true,
+//                 message: "User fetched",
+//                 data: JSON.parse(cachedData)
+//             });
+//         };
+
+//         const fetchData = await UserModal.findById(redisKey).select('-password');
+//         cacheClient.set(redisKey, JSON.stringify(fetchData)); // Saved data in server memory...!
+//         console.log('User fetched from DB');
+
+//         return res.status(200).send({
+//             status: true,
+//             message: "User fetched",
+//             data: fetchData
+//         });
+//     }
+
+//     catch (error) {
+//         console.log(`Err while fetching user by id: ${error}`);
+//         return res.status(500).send({
+//             status: false,
+//             message: "Err while fetching user by id!"
+//         });
+//     };
+// };
+
+const fetchUserByID = async(req,res)=>{
+    try{
+       
+        // console.log(res)
+         const {id} = req.params;
+         console.log('id is ', id)
+        const rediskey = id
+        console.log('rediskey is ', rediskey)
+        
+// const cachedData = cacheClient.get(redisKey); 
+const cacheData = cacheClient.get(rediskey)
+if(cacheData){
+    console.log('user fetched from server memory');
+    return res.status(200).send(
+        {
+            status : true,
+            message : 'user fetched from server memory not fetched from DB',
+            data : JSON.parse(cacheData)
+        }
+    )
+}
+
+const fetchData = await UserModal.findById(rediskey);
+console.log(fetchData)
+cacheClient.set(rediskey,JSON.stringify(fetchData)) // user saved in server memory after fetching from monogo DB 
+console.log('user fetched from DB and saved in server memory')
+
+return res.status(200).send({
+    status : true,
+    message : 'user fetched from mongo db and stored in server memory',
+    data : fetchData
+})
+
+
+    }
+
+    catch(error){
+        console.log(`Error while fetching user by id  ${error}`)
+        return res.status(500).send({
+            status : false,
+            message : 'An error occured while fetching user by id',
+            
+        })
+    }
+}
+//node js performance optimization part end
+
 //delete user controller/api 
 
 const deleteUser = async (req, res) => {
@@ -104,7 +194,7 @@ const deleteUser = async (req, res) => {
     if (del) {
       return res.status(200).send({
         status: true,
-        message: 'User deleted successfully'
+        message: 'UserError while finding user by id deleted successfully'
       });
     } else {
       return res.status(404).send({
@@ -148,4 +238,4 @@ const updateUser = async(req,res)=>{
         })
     }
 }
-export { greetUser, createUser,fetchUsers,deleteUser,updateUser};
+export { greetUser, createUser,fetchUsers,deleteUser,updateUser ,fetchUserByID};
