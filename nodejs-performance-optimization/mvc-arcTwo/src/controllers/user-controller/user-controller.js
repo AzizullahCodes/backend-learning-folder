@@ -89,43 +89,7 @@ catch(error){
 }
 }
 
-//node js performance optimization part start 
-// fetch user by id controller...!
-// const fetchUserByID = async (req, res) => {
-//     try {
-//         const redisKey = req.params.uid;
-//         // console.log('User id:', redisKey);
-
-//         const cachedData = cacheClient.get(redisKey);
-
-//         if (cachedData) {
-//             console.log('User fetched from server memory!');
-//             return res.status(200).send({
-//                 status: true,
-//                 message: "User fetched",
-//                 data: JSON.parse(cachedData)
-//             });
-//         };
-
-//         const fetchData = await UserModal.findById(redisKey).select('-password');
-//         cacheClient.set(redisKey, JSON.stringify(fetchData)); // Saved data in server memory...!
-//         console.log('User fetched from DB');
-
-//         return res.status(200).send({
-//             status: true,
-//             message: "User fetched",
-//             data: fetchData
-//         });
-//     }
-
-//     catch (error) {
-//         console.log(`Err while fetching user by id: ${error}`);
-//         return res.status(500).send({
-//             status: false,
-//             message: "Err while fetching user by id!"
-//         });
-//     };
-// };
+// fetchUser by Id 
 
 const fetchUserByID = async(req,res)=>{
     try{
