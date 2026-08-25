@@ -149,7 +149,9 @@ if(cacheData){
     )
 }
 
-const fetchData = await UserModal.findById(rediskey);
+const fetchData = await UserModal.findById(rediskey).select('-password');
+//we use .select('-password') so that client can not get any users 
+// password in frontend side, it is built-in-method of mongoose 
 console.log(fetchData)
 cacheClient.set(rediskey,JSON.stringify(fetchData)) // user saved in server memory after fetching from monogo DB 
 console.log('user fetched from DB and saved in server memory')
@@ -168,7 +170,7 @@ return res.status(200).send({
         return res.status(500).send({
             status : false,
             message : 'An error occured while fetching user by id',
-            
+
         })
     }
 }
