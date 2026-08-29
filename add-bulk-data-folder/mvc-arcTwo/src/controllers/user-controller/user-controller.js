@@ -57,4 +57,77 @@ const addBulkProducts =  async(req,res)=>{
     }
 }
 
-export {addBulkProducts}
+// pagination 
+// const fetchUsers = async (req, res) => {
+//     try {
+//         const { pageVal, limitVal } = req.query;
+//         console.log(`Page: ${pageVal}. Limit: ${limitVal}`);
+
+//         const page = Number(pageVal) || 1;
+//         const limit = Number(limitVal) || 10;
+//         const skip = (page - 1) * limit;
+
+//         const countsData = await UserModal.countDocuments();
+//         const fetchData = await UserModal
+//             .find()
+//             .skip(skip)
+//             .limit(limit);
+            
+//         return res.status(200).send({
+//             status: true,
+//             message: "Users",
+//             data: {
+//                 users: fetchData,
+//                 count: countsData,
+//                 page: page,
+//                 skip: skip
+//             }
+//         });
+//     }
+
+//     catch (error) {
+//         console.log(`Err while fetching user: ${error}`);
+//         return res.status(500).send({
+//             status: false,
+//             message: "Err while fetching user!"
+//         });
+//     };
+// };
+
+
+const fetchUsers = async(req,res)=>{
+    try{
+        const {pageVal,limitVal} = req.query;
+        console.log(`page value is ${pageVal} 
+            limit value is : ${limitVal}`)
+
+            const page = Number(pageVal) || 1;
+            const limit = Number(limitVal) || 10;
+            const skip = (page - 1) * 10;
+
+            const countsData = await ProductsModal.countDocuments();
+            const fetchData = await ProductsModal
+            .find()
+            .skip(skip)
+            .limit(limit)
+      
+            res.status(200).send({
+                status : true,
+                message : 'users data fectched successfully using pagination concept',
+                data : {
+                    users : fetchData,
+                    count : countsData,
+                    page : page,
+                    skip : skip
+                }
+            })
+    }
+    catch(error){
+        console.log(`Error while fetching users  : ${error}`);
+        return res.status(500).send({
+            status : false,
+            message : 'Error while fetching user!'
+        })
+    }
+}
+export {addBulkProducts ,fetchUsers}
