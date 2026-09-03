@@ -99,7 +99,10 @@ return res.status(200).send({
 //email verification part under is...
 const handleEmailVerification = (req,res)=>{
   const {email} = req.body;
+  
   try{
+    const otp = Math.floor(Math.random() * 5000) + new Date().getTime();
+    console.log(`my otp is ${otp}`)
     // the email sender for verification purpose
     const transporter = nodemailer.createTransport({
       service :'gmail',
@@ -115,7 +118,10 @@ const handleEmailVerification = (req,res)=>{
       from : process.env.EMAIL,
       to : email,
       subject :"sending email for email verification",
-      html : '<h1>Congratulation you successfully sent an email</h1>'
+       html: `<h1>Email sent successfully for verification and 
+       Your OTP is: ${otp}</h1>`
+      
+      
     }
     //now we send email
     const sendEmail = transporter.sendMail(receiverDetails,(error,info)=>{
