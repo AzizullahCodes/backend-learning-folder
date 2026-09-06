@@ -7,15 +7,14 @@ import products from './products.js';
 dotenv.config();
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-app.use(cors({ origin: process.env.CLIENT_URL }));
+app.use(cors());
 app.use(express.json());
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 app.post("/create-checkout-session", async (req, res) => {
     try {
         const { productId } = req.body;
-        const product = products[productId]; // ✅ backend ke apne data se price nikal rahe
+        const product = products[productId];
 
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
