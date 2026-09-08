@@ -1,9 +1,14 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { getCookie } from 'cookies-next'
+import { getCookie } from 'cookies-next';
+import products from '@/src/productsData/productsData';
+import Image from 'next/image';
+import axios from 'axios';
 
 export default function HomePage() {
+  const [productName,setProductName] = useState('');
+  const [productPrice,setProductPrice] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -22,10 +27,69 @@ export default function HomePage() {
     return () => clearInterval(interval)
   }, [router])
 
+  //stripe 
+  const stripeCheckOut = async(item)=>{
+    console.log(item)
+    const apiUrl = 'http://localhost:5050/check-out/session';
+    try{
+     const res = await axios({
+      url : apiUrl,
+      method : 'POST',
+       data: {
+          // 💡 FIX: Wrap 'item' in an array [item] so backend .map() does not crash!
+          item: [
+            {
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              image: item.image,
+              quantity: 1 // Default line-item quantity parameter
+            }
+          ]}
+     })
+     if(res.status == 200){
+      console.log('item data send successfully to server')
+      console.log(res)
+      console.log(res.data.data.checkoutUrl)
+      window.location.href = res.data.data.checkoutUrl
+     }
+    }
+    
+    catch(error){
+      console.log('Error while sending product data to backend for stripe')
+    }
+  }
+
   return (
     <div>
       <h1>Home Page</h1>
-      <p>You will be redirected automatically to /login 1 minute after login.</p>
+      {
+        products?.map((item)=>{
+          return <div key={item.id}>
+             <Image
+             width={400}
+             height={400}
+        src={item.image}
+        alt={item.name}
+        priority={true}
+       
+      />
+            <h1>{item.name}</h1>
+            <p>{item.price}</p>
+            <button onClick={()=>stripeCheckOut(item)}>CheckOut</button>
+            </div>
+        })
+      }
+      
     </div>
   )
 }
+
+  // <Image
+  //           src={product.image}
+  //           alt={product.name}
+  //           width={400}
+  //           height={400}
+  //           className="rounded"
+  //           priority={product.id === 'react-tshirt'} // Optional: load first image faster
+  //         />

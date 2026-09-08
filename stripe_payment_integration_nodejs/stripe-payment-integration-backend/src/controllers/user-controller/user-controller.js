@@ -8,7 +8,7 @@ import Stripe from 'stripe';
 //stripe key 
 const stripe = new Stripe(
   process.env.STRIPE_SECRET_KEY,
-{apiVersion : '2026-08-26'}
+{apiVersion : '2026-08-26.dahlia'}
 )
 
 // signUp controller/api
@@ -243,116 +243,77 @@ const handleEmailVerification = (req,res)=>{
   }
 }
 
-// //stripe integration part 
-// const handleCheckOut = async (req, res) => {
-//     const { items } = req.body;
-//     console.log('Items: ', items);
+// stripe integration part 
+const handleCheckOut = async(req, res) => {
+  const { item } = req.body;
+  console.log('Item received from frontend:', item);
 
-//     try {
-//         const modifyData = items.map((item, index) => {
-//             return {
-//                 price_data: {
-//                     currency: "usd",
-//                     product_data: {
-//                         name: item.productName,
-//                         images: [item.productImage]
-//                     },
-//                     unit_amount: Math.round(item.productPrice * 100)
-//                 },
-//                 quantity: item.productQuantity
-//             };
-//         });
+  // 💡 SAFETY ADVANTAGE: Check if the frontend payload matches an array map layout pattern
+  if (!item || !Array.isArray(item)) {
+    return res.status(400).send({
+      status: false,
+      message: 'Payload error! Expected an array of item products.'
+    });
+  }
 
-//         const paymentSession = await stripe.checkout.sessions.create({
-//             payment_method_types: ['card'],
-//             mode: 'payment',
-//             line_items: modifyData,
-//             success_url: "https://www.angeljackets.com/",
-//             cancel_url: "https://www.google.com/"
-//         });
-//         console.log('Payment session: ', paymentSession);
+  try {
+    const modifyData = item.map((product) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: product.name,
+            images: product.image ? [product.image] : []
+          },
+          // 💡 CRITICAL: Stripe expects product totals configured inside Cents units integers ($20 -> 2000 cents)
+          unit_amount: Math.round(Number(product.price) * 100)
+        },
+        quantity: product.quantity || 1
+      }
+    });
 
-//         if (paymentSession) {
-//             return res.status(200).send({
-//                 status: true,
-//                 message: "Payment successfull",
-//                 data: {
-//                     sessionId: paymentSession.id,
-//                     checkoutUrl: paymentSession.url
-//                 }
-//             });
-//         };
-//     }
+    // Create standard Stripe payment credentials configurations mapping definitions
+    const paymentSession = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: modifyData,
+      success_url: "https://angeljackets.com",
+      cancel_url: "https://google.com"
+    });
 
-//     catch (error) {
-//         console.log('Something went wrong while payment integration:', error);
-//     };
-// };
-// stripe integration part closed
-
-
-
-//stripe real code with dynamic client url 
-
-const handleCheckOut = async (req, res) => {
-    const { items } = req.body;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).send({
-            status: false,
-            message: "No items provided for checkout"
-        });
+    if (paymentSession) {
+      return res.status(200).send({
+        status: true,
+        message: 'payment successful using stripe',
+        data: {
+          paymentId: paymentSession.id,
+          checkoutUrl: paymentSession.url
+        }
+      });
     }
 
-    try {
-        const modifyData = items.map((item) => {
-            return {
-                price_data: {
-                    currency: "usd",
-                    product_data: {
-                        name: item.productName,
-                        images: item.productImage ? [item.productImage] : []
-                    },
-                    unit_amount: Math.round(Number(item.productPrice) * 100)
-                },
-                quantity: Number(item.productQuantity) || 1
-            };
-        });
-
-        const paymentSession = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            line_items: modifyData,
-            success_url: `${process.env.CLIENT_URL}/order-success`,
-            cancel_url: `${process.env.CLIENT_URL}/cart`
-        });
-
-        return res.status(200).send({
-            status: true,
-            message: "Payment session created successfully",
-            data: {
-                sessionId: paymentSession.id,
-                checkoutUrl: paymentSession.url
-            }
-        });
-    }
-
-    catch (error) {
-        console.log('Something went wrong while payment integration:', error);
-        return res.status(500).send({
-            status: false,
-            message: "Payment session could not be created",
-            error: error.message
-        });
-    }
-};
-
+  } catch(error) {
+    console.log('something went wrong while payment integration by stripe...', error)
+    return res.status(500).send({
+      status: false,
+      message: 'Failed to create checkout configuration session processes',
+      error: error.message
+    });
+  }
+}
 export {signUp ,handleLogIn,handleEmailVerification, handleCheckOut}
 
 
 
 
-
+  // const paymentSession = await stripe.checkout.sessions.create({
+  //           payment_method_types: ['card'],
+  //           mode: 'payment',
+  //           line_items: modifyData,
+  //           success_url: "https://www.angeljackets.com/",
+  //           cancel_url: "https://www.google.com/"
+  //       });
+  //       console.log('Payment session: ', paymentSession);
 
 
 

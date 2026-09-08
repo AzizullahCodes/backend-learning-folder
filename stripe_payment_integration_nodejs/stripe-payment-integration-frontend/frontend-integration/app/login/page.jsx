@@ -29,7 +29,11 @@ const Login = () => {
 
       if (res.status === 200 && myRequiredToken) {
         // Set cookie maxAge to 60 seconds (1 minute)
-        setCookie('myToken', myRequiredToken, { maxAge: 60, path: '/' });
+        // setCookie('myToken', myRequiredToken, { maxAge: 60, path: '/' });
+        setCookie('myToken', myRequiredToken, {
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  path: '/'
+});
 
         console.log('User logged in successfully');
         
