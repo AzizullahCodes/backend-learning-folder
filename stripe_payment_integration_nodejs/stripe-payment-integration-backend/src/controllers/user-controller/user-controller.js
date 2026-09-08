@@ -277,8 +277,8 @@ const handleCheckOut = async(req, res) => {
       payment_method_types: ['card'],
       mode: 'payment',
       line_items: modifyData,
-      success_url: "https://angeljackets.com",
-      cancel_url: "https://google.com"
+      success_url: "http://localhost:3000/success",
+      cancel_url: "http://localhost:3000/fail"
     });
 
     if (paymentSession) {
