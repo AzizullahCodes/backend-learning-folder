@@ -39,6 +39,35 @@ server.post('/user/add', async(req,res)=>{
     }
 })
 
+//api for fetch all registered users 
+server.get('/user/fetchAll', async(req,res)=>{
+
+    try{
+        let addQuery = "SELECT * FROM users"
+        const apiRes = await pool.query(
+            addQuery
+           
+        )
+        if(apiRes?.rows){
+            return res.status(200).send({
+                status : true,
+                message : 'user fetched successfully from postsql db by node js',
+                data : apiRes?.rows
+            })
+        }
+        console.log(apiRes?.rows)
+
+    }
+    catch(error){
+        console.log('Error while fetching all users form db using nodejs',error);
+        return res.status(500).send({
+            sttatus : false,
+            message : 'Internal server error'
+        })
+    }
+})
+
+
 server.listen(port,()=>{
     console.log('node js server is running ',port)
 })
