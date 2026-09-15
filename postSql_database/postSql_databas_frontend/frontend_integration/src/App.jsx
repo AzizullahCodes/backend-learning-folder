@@ -116,6 +116,8 @@ const App = () => {
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
   const [fetchUsers, setFetchUsers] = useState([])
+  const [editId,setEditId] = useState(null)
+  const isEdit = false
   //addUserHandler function 
   const addUserHandler = async () => {
     if (!username || !email || !age) {
@@ -172,6 +174,14 @@ const deleteAllUsersHandler = async()=>{
  }
 }
 
+//cance edit function 
+const cancelEdit = async()=>{
+  setEditId('');
+  setUserName('');
+  setEmail('');
+  setAge('')
+}
+
 //delete user handler
 const deleteUserHandler = async(item)=>{
  let apiUrl = `http://localhost:5050/user/delete/${item.id}`
@@ -190,7 +200,52 @@ const deleteUserHandler = async(item)=>{
   console.log('error while deleting user')
  }
 }
+//update user funciton 
+const editUser = async(item)=>{
+  setEditId(item.id);
+  setUserName(item.username);
+  setEmail(item.email);
+  setAge(item.age)
+  
+}
 
+//update User funciton 
+const updateUser = async()=>{
+  if(!username || !email || !age){
+    alert('fill all fields')
+    return
+  }
+  else{
+    let obj = {
+      id : editId,
+      username,
+      email,
+      age
+    }
+    
+    try{
+      let apiUrl = 'http://localhost:5050/user/update'
+      const res = await axios({
+        url : apiUrl,
+        method : 'PUT',
+        data : obj
+      })
+      if(res){
+        alert('user updated successfully')
+        setEditId('');
+        setAge('');
+        setUserName('')
+        setEmail('')
+
+        fetchAllRegisteredUsers()
+      }
+
+    }
+    catch(error){
+      console.log('error while updating user')
+    }
+  }
+}
   //fetchAllRegisteredUsers function
   const fetchAllRegisteredUsers = async () => {
     let apiUrl = 'http://localhost:5050/user/fetchAll'
@@ -259,9 +314,11 @@ const deleteUserHandler = async(item)=>{
             />
           </div>
 
-          <button className="entry-card__submit" onClick={addUserHandler}>
+         {
+          (editId) ?(<><button onClick={updateUser}>update user</button> <button onClick={cancelEdit}>cancel edit</button></>) : <button className="entry-card__submit" onClick={addUserHandler}>
             Add user
-          </button>
+          </button> 
+         }
         </section>
 
         <section className="directory">
@@ -280,12 +337,14 @@ const deleteUserHandler = async(item)=>{
                     <span className="directory__email">{item.email}</span>
                     <span className="directory__age">{item.age}</span>
                     <span onClick={()=>deleteUserHandler(item)}>delete</span>
-                    <span onClick={deleteAllUsersHandler}>delete all</span>
+                    <span onClick={()=>editUser(item)}>Edit user</span>
+                    
                   </li>
                 )
               })
             }
           </ul>
+          <button onClick={deleteAllUsersHandler}>delete all</button>
         </section>
       </main>
     </div>
