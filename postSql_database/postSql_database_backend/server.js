@@ -152,39 +152,23 @@ catch(error){
 
 
 //api for deleteAll users  
-server.delete('/user/deleteAll',async(req,res)=>{
-    
-try{
-const apiRes = await pool.query(
-    "DELETE  FROM users"
-   
-)
-console.log(`apiRes is ${apiRes}`)
+server.delete('/user/deleteAll', async (req, res) => {
+    try {
+        const apiRes = await pool.query("DELETE FROM users");
 
-if(apiRes.rows.length == 0){
-    return res.status(404).send({
-        status : false,
-        message : 'user not found'
-    })
-}
-
-if(apiRes){
-    return res.status(200).send({
-        status : true,
-        message :'all users deleted successfully',
-        data : apiRes.rows[0]
-    })
-}
-}
-catch(error){
-    console.log(`Error while deleting  all users  ${error}`);
-    return res.status(500).send({
-        status : false,
-        message :'internal server error'
-    })
-}
-})
-
+        return res.status(200).send({
+            status: true,
+            message: `${apiRes.rowCount} users deleted successfully`
+        });
+    }
+    catch (error) {
+        console.log('Error while deleting all users', error);
+        return res.status(500).send({
+            status: false,
+            message: 'internal server error'
+        });
+    }
+});
 //api for fetch all registered users 
 server.get('/user/fetchAll', async(req,res)=>{
 

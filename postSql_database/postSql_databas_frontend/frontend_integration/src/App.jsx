@@ -153,7 +153,26 @@ const App = () => {
       }
     }
   }
-//delete user handler 
+//delete Allusers handler  
+const deleteAllUsersHandler = async()=>{
+ let apiUrl = `http://localhost:5050/user/deleteAll`
+ try{
+  const res = await axios({
+    url : apiUrl,
+    method : 'DELETE',
+  })
+  if(res){
+    alert('all users deleted successfully')
+    window.location.reload()
+  }
+
+ }
+ catch(error){
+  console.log('error while deleting all users', error?.response?.data || error.message)
+ }
+}
+
+//delete user handler
 const deleteUserHandler = async(item)=>{
  let apiUrl = `http://localhost:5050/user/delete/${item.id}`
  try{
@@ -261,6 +280,7 @@ const deleteUserHandler = async(item)=>{
                     <span className="directory__email">{item.email}</span>
                     <span className="directory__age">{item.age}</span>
                     <span onClick={()=>deleteUserHandler(item)}>delete</span>
+                    <span onClick={deleteAllUsersHandler}>delete all</span>
                   </li>
                 )
               })
