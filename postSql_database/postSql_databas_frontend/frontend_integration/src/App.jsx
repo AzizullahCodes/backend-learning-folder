@@ -153,7 +153,24 @@ const App = () => {
       }
     }
   }
+//delete user handler 
+const deleteUserHandler = async(item)=>{
+ let apiUrl = `http://localhost:5050/user/delete/${item.id}`
+ try{
+  const res = await axios({
+    url : apiUrl,
+    method : 'DELETE',
+  })
+  if(res){
+    alert('user deleted successfully')
+    window.location.reload()
+  }
 
+ }
+ catch(error){
+  console.log('error while deleting user')
+ }
+}
 
   //fetchAllRegisteredUsers function
   const fetchAllRegisteredUsers = async () => {
@@ -243,6 +260,7 @@ const App = () => {
                     <span className="directory__name">{item.username}</span>
                     <span className="directory__email">{item.email}</span>
                     <span className="directory__age">{item.age}</span>
+                    <span onClick={()=>deleteUserHandler(item)}>delete</span>
                   </li>
                 )
               })
