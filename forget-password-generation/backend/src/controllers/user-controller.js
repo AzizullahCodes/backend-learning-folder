@@ -129,12 +129,12 @@ const forgotPassword = async(req,res)=>{
 //reset password api 
 const resetPassword = async(req,res)=>{
     try{
-        const {token} = req.query
-        const {password} = req.body;
+        const {password,token} = req.body;
+        const hashPassword = await bcrypt.hash(req?.body?.password,10)
 
         const user = await userModal.findOne({token : token})
         if(user){
-            const updateData = await userModal.findByIdAndUpdate({_id : user._id},{$set : {password : password, token : ''}},{new : true})
+            const updateData = await userModal.findByIdAndUpdate({_id : user._id},{$set : {password : hashPassword, token : ''}},{new : true})
            return res.status(200).send({
             status : true,
             message : 'password resetted successfully'

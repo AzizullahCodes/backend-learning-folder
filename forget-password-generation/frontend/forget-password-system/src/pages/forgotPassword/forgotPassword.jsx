@@ -2,51 +2,44 @@ import axios from 'axios'
 import React, { useState } from 'react'
 
 const ForgotPassword = () => {
-    
-    const [password,setPassword] = useState('')
+    const [email, setEmail] = useState('')
+    const [message, setMessage] = useState('')
 
-    // signup Handler
-    const loginHandler = async()=>{
-        let obj = {
-           
-            password
-        }
-        
-        try{
-            let apiUrl = 'http://localhost:5050/login'
+    const forgotPasswordHandler = async () => {
+        try {
             let res = await axios({
-                url : apiUrl,
-                method : 'POST',
-                data : obj
+                url: 'http://localhost:5050/forget/password',
+                method: 'POST',
+                data: { email }
             })
-           if(res.data.status === true){
-            console.log('you have logged in successfully')
-           }
-        }
-        catch(error){
-            console.log('error while login', error)
-        }
 
+            if (res.data.status === true) {
+                setMessage('Check your email for reset link')
+            } else {
+                setMessage(res.data.message)
+            }
+        } catch (error) {
+            console.log('error while sending reset link', error)
+            setMessage('Something went wrong')
+        }
     }
-  return (
-    <div>
-        <h1>Forgot password</h1>
-        
-        
-         <input
-        type='password'
-        placeholder='Enter password'
-        value={password} 
-        onChange={(e)=>setPassword(e.target.value)}
-        autoComplete='new-password'/><br/>
 
-        <button onClick={loginHandler}>login</button>
+    return (
+        <div>
+            <h1>Forgot password</h1>
 
-        <a href="/">Forgot password</a>
+            <input
+                type='email'
+                placeholder='Enter your email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            /><br />
 
+            <button onClick={forgotPasswordHandler}>Send Reset Link</button>
 
-    </div>
-  )
+            {message && <p>{message}</p>}
+        </div>
+    )
 }
 
 export default ForgotPassword

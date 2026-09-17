@@ -80,7 +80,8 @@ const handleEmailVerification = async (email, token) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "reset password",
-      html: "<a href='http://localhost:5050/reset/password?token=" + token + "'>reset password click here</a>"
+html: `<a href='http://localhost:5173/resetPassword?token=${token}'>Reset Password</a>`
+    //  html: "<a href='http://localhost:5050/reset/password?token=" + token + "'>reset password click here</a>"
     };
 
     const info = await transporter.sendMail(receiverDetails);
