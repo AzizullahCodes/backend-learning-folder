@@ -125,5 +125,32 @@ const forgotPassword = async(req,res)=>{
     }
 }
 
-export { signUp, login,forgotPassword}
+
+//reset password api 
+const resetPassword = async(req,res)=>{
+    try{
+        const {token} = req.query
+        const {password} = req.body;
+
+        const user = await userModal.findOne({token : token})
+        if(user){
+            const updateData = await userModal.findByIdAndUpdate({_id : user._id},{$set : {password : password, token : ''}},{new : true})
+           return res.status(200).send({
+            status : true,
+            message : 'password resetted successfully'
+           })
+        }
+        else{
+            return res.status(200).send({
+                status : false,
+                message : 'token has expired'
+            })
+        }
+
+    }
+    catch(error){
+        console.log('Error while reseting password ', error)
+    }
+}
+export { signUp, login,forgotPassword,resetPassword}
 
