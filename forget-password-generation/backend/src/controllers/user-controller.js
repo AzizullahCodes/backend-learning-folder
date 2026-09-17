@@ -1,6 +1,7 @@
 //all apis we make here 
 
 import userModal from "../modals/user-modal/user-modal.js";
+import bcrypt from "bcryptjs";
 
 //signup api 
 const signUp =  async(req,res)=>{
@@ -14,11 +15,14 @@ const signUp =  async(req,res)=>{
             })
         }
         
+        //secure password with bcyptjs 
+        //  const securePass = await bcrypt.hash(req?.body?.password,10);
+        const securePassword = await bcrypt.hash(req?.body?.password,10)
         //we create new user here
         const userData = {
             name,
             email,
-            password
+            password : securePassword
         }
 
         const newUser = new userModal(userData)
