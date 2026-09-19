@@ -1,3 +1,5 @@
+
+
 // import express from "express";
 // import cors from "cors";
 // import morgan from "morgan";
@@ -24,7 +26,7 @@
 //   socket.on("msgFromFrontend", (data) => {
 //     console.log("message aaya:", data);
 
-//     io.emit("msgFromFromBackend", 'i am from backend'); // sabko wapas bhejo
+//     io.emit("msgFromBackend", data); // sabko wapas bhejo
 //   });
 
 //   socket.on("disconnect", () => {
@@ -38,6 +40,9 @@
 // httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
+
+
+
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -45,34 +50,33 @@ import http from "http";
 import { Server } from "socket.io";
 
 const app = express();
-const httpServer = http.createServer(app);
-const PORT =  5050;
+app.use(cors());
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "http://localhost:5174" },
 });
 
-app.use(cors());
-app.use(morgan("dev"));
-app.use(express.json());
-
 io.on("connection", (socket) => {
-  
-  socket.on("msgFromFrontend", (data) => {
-    console.log("message aaya:", data);
+  socket.on("join", (username) => {
+    socket.data.username = username;
+    socket.broadcast.emit("system", `${username} joined the chat`);
+  });
 
-    io.emit("msgFromBackend", data); // sabko wapas bhejo
+  socket.on("chat:message", (text) => {
+    if (!text || !text.trim()) return;
+    io.emit("chat:message", {
+      id: socket.id,
+      user: socket.data.username || "Anonymous",
+      text: text.trim(),
+    });
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected", socket.id);
+    if (socket.data.username) {
+      io.emit("system", `${socket.data.username} left the chat`);
+    }
   });
 });
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
-});
 
-httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(4000, () => console.log("Server on http://localhost:4000"));
