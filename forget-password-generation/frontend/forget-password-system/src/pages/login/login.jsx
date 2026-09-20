@@ -50,7 +50,10 @@ const Login = () => {
 
         <button onClick={loginHandler}>login</button>
 
-        <a href="/forgotPassword">Forgot password</a>
+        {/* <a href="/forgotPassword">Forgot password</a> */}
+        <a href="/verifyOtp">Forgot password (OTP)</a>
+<br />
+<a href="/forgotPassword">Forgot password (email link)</a>
 
 
     </div>

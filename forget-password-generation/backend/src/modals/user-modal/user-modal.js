@@ -1,24 +1,3 @@
-// //user model sturucture we create schema here
-// import mongoose from "mongoose";
-// const userSchema = new mongoose.Schema({
-//     email : {
-//         type : String
-//     },
-//     password : {
-//         type : String,
-//         required : true
-//     }
-    
-// },
-// {
-//          collection: "users", 
-         
-//         timestamps : true
-//     }
-// )
-// const userModal = mongoose.model('users',userSchema);
-// export default userModal 
-// we create schema in user modal for database
 import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     name : {
@@ -33,7 +12,6 @@ const userSchema = new mongoose.Schema({
         lowercase : true,
         trim : true
     },
-
     password : {
         type : String,
         required : true
@@ -41,10 +19,20 @@ const userSchema = new mongoose.Schema({
     token : {
         type : String,
         default : ''
+    },
+
+    // NEW: OTP fields
+    otp : {
+        type : String,
+        default : ''
+    },
+    otpExpires : {
+        type : Date
+    },
+    otpAttempts : {
+        type : Number,
+        default : 0
     }
-    
-
-
 }
 ,
 {
