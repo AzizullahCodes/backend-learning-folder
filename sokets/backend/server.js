@@ -43,40 +43,81 @@
 
 
 
-import express from "express";
-import cors from "cors";
-import morgan from "morgan";
-import http from "http";
-import { Server } from "socket.io";
+// import express from "express";
+// import cors from "cors";
+// import morgan from "morgan";
+// import http from "http";
+// import { Server } from "socket.io";
 
-const app = express();
-app.use(cors());
+// const app = express();
+// app.use(cors());
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "http://localhost:5174" },
-});
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: { origin: "http://localhost:5174" },
+// });
 
-io.on("connection", (socket) => {
-  socket.on("join", (username) => {
-    socket.data.username = username;
-    socket.broadcast.emit("system", `${username} joined the chat`);
-  });
+// io.on("connection", (socket) => {
+//   socket.on("join", (username) => {
+//     socket.data.username = username;
+//     socket.broadcast.emit("system", `${username} joined the chat`);
+//   });
 
-  socket.on("chat:message", (text) => {
-    if (!text || !text.trim()) return;
-    io.emit("chat:message", {
-      id: socket.id,
-      user: socket.data.username || "Anonymous",
-      text: text.trim(),
-    });
-  });
+//   socket.on("chat:message", (text) => {
+//     if (!text || !text.trim()) return;
+//     io.emit("chat:message", {
+//       id: socket.id,
+//       user: socket.data.username || "Anonymous",
+//       text: text.trim(),
+//     });
+//   });
 
-  socket.on("disconnect", () => {
-    if (socket.data.username) {
-      io.emit("system", `${socket.data.username} left the chat`);
-    }
-  });
-});
+//   socket.on("disconnect", () => {
+//     if (socket.data.username) {
+//       io.emit("system", `${socket.data.username} left the chat`);
+//     }
+//   });
+// });
 
-server.listen(4000, () => console.log("Server on http://localhost:4000"));
+// server.listen(4000, () => console.log("Server on http://localhost:4000"));
+
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import http from 'http';
+import { Server } from 'socket.io';
+
+
+const port = 5050
+ const app = express();
+
+ const httpServer = http.createServer(app)
+
+ const io = new Server(httpServer,{
+  cors : {
+    origin : '*',
+    methods : ['GET','POST','DELETE','PUT']
+  }
+ })
+
+ app.use(cors())
+ app.use(morgan('dev'))
+ app.use(express.json())
+
+ //socket functionality 
+ io.on('connect', (socket)=>{
+  console.log('a user connected...', socket.id)
+
+  //1 
+ socket.on('read-message',(msg)=>{
+  console.log('msg received from frontend...',msg)
+ })
+//sending data from backend to client 
+socket.emit('testing', 'hello i am from backend')
+ })
+
+ 
+
+ httpServer.listen(port,()=>{
+  console.log('node js server is runing with soket functionaliy')
+ })
