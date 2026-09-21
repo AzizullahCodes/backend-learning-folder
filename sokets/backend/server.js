@@ -111,9 +111,10 @@ const port = 5050
   //1 
  socket.on('read-message',(msg)=>{
   console.log('msg received from frontend...',msg)
+
+  socket.emit('testing',`${msg}`)
  })
-//sending data from backend to client 
-socket.emit('testing', 'hello i am from backend')
+
  })
 
  

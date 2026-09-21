@@ -136,15 +136,19 @@
 // }
 
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const socket = io('http://localhost:5050',{autoConnect : false})
 const App = ()=>{
+  const [message,setMessage] = useState('')
+  const [data,setData] = useState([])
 
   const submit = () => {
+    console.log('msg.....',message)
     console.log('Button clicked!');
-    socket.emit("read-message" , 'Hello testing 123');
+    socket.emit("read-message" , message);
+    setMessage('')
   };
 
   useEffect(()=>{
@@ -154,14 +158,26 @@ const App = ()=>{
 
       //
       socket.on('testing', (ms)=>{
-        console.log('backend sy aya houn....',ms)
+        ms && setData((prev)=> [...prev,ms])
       })
     })
   },[])
   return(
     <div>
       <h1>socket integration</h1>
+      <input type="text"
+      placeholder="enter msg"
+      value={message}
+      onChange={(e)=>setMessage(e.target.value)}
+       />
        <button onClick={submit}> Submit </button>
+      <ul>
+         {
+      data.map((item,index)=>{
+          return <li key={index}>{item}</li>
+        })
+       }
+      </ul>
     </div>
   )
 }
