@@ -1,124 +1,59 @@
+// Web Sockets
+import express from "express";
+import morgan from "morgan";
+import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
 
+const port = 5050;
+const app = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "DELETE", "PUT"], // method -> methods
+  },
+});
 
-// import express from "express";
-// import cors from "cors";
-// import morgan from "morgan";
-// import http from "http";
-// import { Server } from "socket.io";
+app.use(cors());
+app.use(morgan("dev"));
+app.use(express.json());
 
-// const app = express();
-// const httpServer = http.createServer(app);
-// const PORT =  5050;
+const users = {}; // { user_1: "socketId", user_2: "socketId" }
 
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//   },
-// });
+io.on("connect", (socket) => {
+  console.log("A user connected:", socket.id);
 
-// app.use(cors());
-// app.use(morgan("dev"));
-// app.use(express.json());
+  // 1) User apni ID register karta hai
+  socket.on("register", (uid) => {
+    users[uid] = socket.id;
+    socket.data.uid = uid; // is socket ki ID yaad rakho
+    console.log("Users:", users);
+  });
 
-// io.on("connection", (socket) => {
-  
-//   socket.on("msgFromFrontend", (data) => {
-//     console.log("message aaya:", data);
+  // 2) Private message
+  socket.on("private-msg", ({ to, message }) => {
+    const targetSocket = users[to];
 
-//     io.emit("msgFromBackend", data); // sabko wapas bhejo
-//   });
+    if (targetSocket) {
+      io.to(targetSocket).emit("read-messages", {
+        message,
+        from: socket.data.uid, // sender ki asli ID
+      });
+    } else {
+      // sender ko batao ke user online nahi hai
+      socket.emit("user-offline", `${to} abhi online nahi hai`);
+    }
+  });
 
-//   socket.on("disconnect", () => {
-//     console.log("user disconnected", socket.id);
-//   });
-// });
-// app.get("/", (req, res) => {
-//   res.send("<h1>Hello world</h1>");
-// });
+  // 3) Disconnect pe cleanup
+  socket.on("disconnect", () => {
+    const uid = socket.data.uid;
+    if (uid && users[uid] === socket.id) delete users[uid];
+    console.log("User disconnected:", socket.id, users);
+  });
+});
 
-// httpServer.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-
-
-
-// import express from "express";
-// import cors from "cors";
-// import morgan from "morgan";
-// import http from "http";
-// import { Server } from "socket.io";
-
-// const app = express();
-// app.use(cors());
-
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: { origin: "http://localhost:5174" },
-// });
-
-// io.on("connection", (socket) => {
-//   socket.on("join", (username) => {
-//     socket.data.username = username;
-//     socket.broadcast.emit("system", `${username} joined the chat`);
-//   });
-
-//   socket.on("chat:message", (text) => {
-//     if (!text || !text.trim()) return;
-//     io.emit("chat:message", {
-//       id: socket.id,
-//       user: socket.data.username || "Anonymous",
-//       text: text.trim(),
-//     });
-//   });
-
-//   socket.on("disconnect", () => {
-//     if (socket.data.username) {
-//       io.emit("system", `${socket.data.username} left the chat`);
-//     }
-//   });
-// });
-
-// server.listen(4000, () => console.log("Server on http://localhost:4000"));
-
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import http from 'http';
-import { Server } from 'socket.io';
-
-
-const port = 5050
- const app = express();
-
- const httpServer = http.createServer(app)
-
- const io = new Server(httpServer,{
-  cors : {
-    origin : '*',
-    methods : ['GET','POST','DELETE','PUT']
-  }
- })
-
- app.use(cors())
- app.use(morgan('dev'))
- app.use(express.json())
-
- //socket functionality 
- io.on('connect', (socket)=>{
-  console.log('a user connected...', socket.id)
-
-  //1 
- socket.on('read-message',(msg)=>{
-  console.log('msg received from frontend...',msg)
-
-  socket.emit('testing',`${msg}`)
- })
-
- })
-
- 
-
- httpServer.listen(port,()=>{
-  console.log('node js server is runing with soket functionaliy')
- })
+httpServer.listen(port, () => {
+  console.log("Your Node JS server is running!");
+});
