@@ -29,6 +29,11 @@ io.on("connect", (socket) => {
     users.set(uid, socket.id);
     console.log("users array is...", users);
   });
+  //reading data coming from frontend 
+  socket.on('private_messages',({to,message})=>{
+    console.log(`message is sent for....${to}`)
+    console.log(`message is ....${message}`)
+  })
 
   // after disconnecting
   socket.on("disconnect", () => {

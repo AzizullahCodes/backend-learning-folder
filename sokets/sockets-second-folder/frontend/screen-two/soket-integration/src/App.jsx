@@ -9,7 +9,7 @@ const App = ()=>{
 
   const addMessage = ()=>{
     socket.emit('private_messages',{
-      to : 'user_2',
+      to : 'user_1',
       message : input
     })
   }
@@ -31,7 +31,7 @@ const App = ()=>{
   },[])
   return(
    <div>
-     <h1>Screen One</h1>
+     <h1>Screen Two</h1>
      <input
      value={input}
      placeholder='write message'
