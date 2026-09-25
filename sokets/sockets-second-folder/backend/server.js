@@ -33,6 +33,16 @@ io.on("connect", (socket) => {
   socket.on('private_messages',({to,message})=>{
     console.log(`message is sent for....${to}`)
     console.log(`message is ....${message}`)
+    let targetSocket = users.get(to)
+    if(targetSocket){
+        io.to(targetSocket).emit('read-messages',{
+            message,
+            from : socket.id
+        })
+    }
+    else{
+        console.log('user not found')
+    }
   })
 
   // after disconnecting

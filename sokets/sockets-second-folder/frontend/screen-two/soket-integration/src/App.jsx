@@ -27,6 +27,10 @@ const App = ()=>{
     socket.on('n',(iu)=>{
       console.log(`data coming from backend is ${iu}`)
     })
+    //read messages from coming backend and backend is receiving from frontend 
+    socket.on('read-messages',(msgData)=>{
+      console.log('message data is......',msgData)
+    })
 
   },[])
   return(

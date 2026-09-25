@@ -21,11 +21,16 @@ const App = ()=>{
       console.log(`socket connected successfully and socket id is ${socket.id}`)
      
     //registering user 
-    socket.emit('register','user_2');
+    socket.emit('register','user_1');
     })
 
     socket.on('n',(iu)=>{
       console.log(`data coming from backend is ${iu}`)
+    })
+
+    //read messages from coming backend and backend is receiving from frontend 
+    socket.on('read-messages',(msgData)=>{
+      console.log('message data is......',msgData)
     })
 
   },[])
