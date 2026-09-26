@@ -7,6 +7,7 @@ const App = ()=>{
   const [input,setInput] = useState('');
   const [allMessages,setAllMessages] = useState([])
   const [editIndex,setEditIndex] = useState(null)
+ const [isEdit,setIsEdit] = useState(false)
 
   const addMessage = ()=>{
     socket.emit('private_messages',{
@@ -40,6 +41,7 @@ setAllMessages(cloneAllMessages)
 
   //editHandler
   const editHandler = (item,index)=>{
+    setIsEdit(true)
   setEditIndex(index)
 setInput(item.message)
   }
@@ -50,19 +52,23 @@ setInput(item.message)
       return
     }
     else{
-      console.log(editIndex)
-      console.log(allMessages[editIndex])
+      // console.log(editIndex)
+      // console.log(allMessages[editIndex])
       let obj = allMessages[editIndex]
-      console.log('message is ',obj.message)
-      console.log('new input value is...',input)
+      // console.log('message is ',obj.message)
+      // console.log('new input value is...',input)
       obj.message = input
-      console.log('new object is....',obj)
+      // console.log('new object is....',obj)
       let cloneAllMessages = [...allMessages]
-      console.log('clone all messages is....',cloneAllMessages)
+      // console.log('clone all messages is....',cloneAllMessages)
       //delete already exist object 
       cloneAllMessages.splice(editIndex,1,obj)
       setAllMessages(cloneAllMessages)
-      console.log('all messages are....',allMessages)
+      // console.log('all messages are....',allMessages)
+
+      setIsEdit(false)
+      setEditIndex(null)
+      setInput('')
       
     }
   }
@@ -108,15 +114,18 @@ setInput(item.message)
      onChange={(e)=>setInput(e.target.value)}
      
      />
-     <button onClick={addMessage}>Add</button>
-     <button onClick={updateHandler}>update</button>
+     
+     
+    {isEdit && <button onClick={updateHandler}>update</button>}
+    {!isEdit && <button onClick={addMessage}>Add</button>}
 
      <ul>
       {
         allMessages?.map((item,index)=>{
           return <li key={index}>{item.message}
           <button onClick={()=>deleteHandler(index)}>delete</button>
-          <button onClick={()=>editHandler(item,index)}>Edit</button></li>
+          
+          {item.from == 'user_2' && <button onClick={()=>editHandler(item,index)}>Edit</button>} </li>
         })
       }
      </ul>
