@@ -12,6 +12,15 @@ const App = ()=>{
       to : 'user_2',
       message : input
     })
+
+    //setAllMessages 
+    setAllMessages((prevMessage)=>[
+      ...prevMessage,{
+        from : 'user_1',
+        to : 'user_2',
+        message : input
+      }
+    ])
   }
 
   useEffect(()=>{
@@ -31,7 +40,19 @@ const App = ()=>{
     //read messages from coming backend and backend is receiving from frontend 
     socket.on('read-messages',(msgData)=>{
       console.log('message data is......',msgData)
+
+
+      //setAllMessages state 
+    setAllMessages((prev)=>[
+      ...prev,{
+        from : msgData?.from,
+        to : '',
+        message : msgData?.message
+      }
+    ])
     })
+
+    
 
   },[])
   return(
@@ -44,6 +65,14 @@ const App = ()=>{
      
      />
      <button onClick={addMessage}>Add</button>
+
+     <ul>
+      {
+        allMessages?.map((item,index)=>{
+          return <li key={index}>{item.message}</li>
+        })
+      }
+     </ul>
    </div>
     
   )
