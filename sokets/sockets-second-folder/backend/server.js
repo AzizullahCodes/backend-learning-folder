@@ -4,12 +4,14 @@ import morgan from "morgan";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
-const port = 5052;
+const port = process.env.PORT || 5051
 
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
