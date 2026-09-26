@@ -6,6 +6,7 @@ const socket = io("http://localhost:5052",{autoConnect : false});
 const App = ()=>{
   const [input,setInput] = useState('');
   const [allMessages,setAllMessages] = useState([])
+  const [editIndex,setEditIndex] = useState(null)
 
   const addMessage = ()=>{
     socket.emit('private_messages',{
@@ -21,6 +22,49 @@ const App = ()=>{
         message : input
       }
     ])
+
+    setInput('')
+  }
+  //delete message function 
+  const deleteHandler = (a)=>{
+console.log(a)
+console.log(allMessages)
+let cloneAllMessages = [...allMessages]
+console.log('all message clone is.....', cloneAllMessages)
+
+cloneAllMessages.splice(a,1)
+console.log('all messages clone is....',cloneAllMessages)
+
+setAllMessages(cloneAllMessages)
+  }
+
+  //editHandler
+  const editHandler = (item,index)=>{
+  setEditIndex(index)
+setInput(item.message)
+  }
+
+  //updateHandler
+  const updateHandler = ()=>{
+    if(editIndex == null){
+      return
+    }
+    else{
+      console.log(editIndex)
+      console.log(allMessages[editIndex])
+      let obj = allMessages[editIndex]
+      console.log('message is ',obj.message)
+      console.log('new input value is...',input)
+      obj.message = input
+      console.log('new object is....',obj)
+      let cloneAllMessages = [...allMessages]
+      console.log('clone all messages is....',cloneAllMessages)
+      //delete already exist object 
+      cloneAllMessages.splice(editIndex,1,obj)
+      setAllMessages(cloneAllMessages)
+      console.log('all messages are....',allMessages)
+      
+    }
   }
 
   useEffect(()=>{
@@ -65,11 +109,14 @@ const App = ()=>{
      
      />
      <button onClick={addMessage}>Add</button>
+     <button onClick={updateHandler}>update</button>
 
      <ul>
       {
         allMessages?.map((item,index)=>{
-          return <li key={index}>{item.message}</li>
+          return <li key={index}>{item.message}
+          <button onClick={()=>deleteHandler(index)}>delete</button>
+          <button onClick={()=>editHandler(item,index)}>Edit</button></li>
         })
       }
      </ul>
