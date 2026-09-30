@@ -2,6 +2,7 @@
 import 'dotenv/config'
 import express from 'express'
 import next from 'next';
+import userRotuer from './routes/user-routes/user-routes.js'
 import handleConnectDB from './mongoDbConfiguration/db.js';
 
 const dev = process.env.NODE_ENV != "production";
@@ -29,6 +30,8 @@ app.get('/api/test',(req,res)=>{
     })
 })
 
+//import userRotues put here
+app.use('/api/test',userRotuer)
 //all another request handle next js server
 app.use((req,res)=>{
     return handle(req,res)
