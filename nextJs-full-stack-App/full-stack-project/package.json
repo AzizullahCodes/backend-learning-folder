@@ -12,6 +12,7 @@
     "axios": "^1.20.0",
     "bcryptjs": "^3.0.3",
     "cross-env": "^7.0.3",
+    "dns": "^0.2.2",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "mongoose": "^9.10.2",

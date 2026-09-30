@@ -6,7 +6,7 @@ const handleConnectDB = async()=>{
    const isConnect = mongoose.connect(
     process.env.dbUrl ,
     {
-        dbName : 'nextjs-full-stack'
+        dbName : 'ecommerce'
     }
    )
       isConnect && console.log(`mongoDB conected successfully`)

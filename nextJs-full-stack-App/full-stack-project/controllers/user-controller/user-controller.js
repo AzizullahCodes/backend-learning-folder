@@ -45,4 +45,21 @@ const makeNewUser = async (req, res) => {
   }
 }
 
-export { makeNewUser }
+
+//fetchAll users api 
+const fetchAllUsers = async(req,res)=>{
+    try{
+     const users = await UserModal.find().select('-password');
+    //   const users = await UserModal.find()
+    
+    res.status(200).send({
+        status : true,
+        message : 'users fetched successfully from mongodb',
+        data : users
+    })
+    }
+    catch(error){
+        console.log('something went wrong while fetching users.....',error)
+    }
+}
+export { makeNewUser , fetchAllUsers}

@@ -25,11 +25,11 @@ const userSchema = new mongoose.Schema(
 },
 //second parameter
 {
-    collection : 'abc',
+    collection : 'users',
     timestamps : true
 }
 
 )
 
-const UserModal = mongoose.model( "abc",userSchema)
+const UserModal = mongoose.model( "users",userSchema)
 export default UserModal
